@@ -4,6 +4,11 @@
 
 面向 AI Agent 的比特浏览器自动化工具集，基于比特浏览器官方 API 封装。支持标准 stdio MCP 的 Agent 宿主可以接入 MCP 服务，也可以通过 CLI 或共享 JavaScript 核心调用；轻量 Skill 提供需求识别、操作编排和结果交接规范。普通 JS ESM，无编译或压缩步骤。
 
+本项目依赖比特浏览器客户端及其本地 API，功能封装以官方接口文档为依据。使用前请安装比特浏览器并启用本地 API 服务。
+
+- [比特浏览器官网](https://www.bitbrowser.cn/)
+- [官方 API 接口文档](https://doc2.bitbrowser.cn/jiekou.html)
+
 ## 快速接入
 
 准备 Node.js >=22.12（含 npm）和已启用本地 API 的比特浏览器。获取项目并安装依赖：

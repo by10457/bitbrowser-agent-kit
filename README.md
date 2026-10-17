@@ -2,21 +2,33 @@
 
 独立仓库：[by10457/bitbrowser-agent-kit](https://github.com/by10457/bitbrowser-agent-kit)。采用 [MIT 许可证](LICENSE)。本项目为社区封装，与比特浏览器官方无隶属关系。
 
-基于比特浏览器官方 API 的本地自动化封装。共享 JavaScript 核心供 MCP、CLI 和网站业务脚本调用，轻量 Skill 负责需求识别、操作编排和结果交接。普通 JS ESM，无编译或压缩步骤。
+面向 AI Agent 的比特浏览器自动化工具集，基于比特浏览器官方 API 封装。支持标准 stdio MCP 的 Agent 宿主可以接入 MCP 服务，也可以通过 CLI 或共享 JavaScript 核心调用；轻量 Skill 提供需求识别、操作编排和结果交接规范。普通 JS ESM，无编译或压缩步骤。
 
 ## 快速接入
 
-准备 Node.js >=22.12（含 npm）、Codex CLI 和已启用本地 API 的比特浏览器，在本目录执行：
+准备 Node.js >=22.12（含 npm）和已启用本地 API 的比特浏览器。获取项目并安装依赖：
 
 ```powershell
 git clone https://github.com/by10457/bitbrowser-agent-kit.git
 cd bitbrowser-agent-kit
-node setup.js
+npm ci
 ```
 
-初始化安装依赖、注册用户 Skill/MCP，并调用在线状态和窗口列表做只读验证。可重复运行，保留已有配置；冲突时停止而不覆盖。参数、隔离安装和故障处理见 [安装与接入](references/setup.md)。首次进入项目的 Agent 从 [AGENTS.md](AGENTS.md) 开始。
+按 Agent 宿主支持的方式接入：
 
-完成后在新 Codex 会话请求：“使用 $bitbrowser 检查在线状态并列出窗口，只读查询。”独立 SDK 验证成功不代表当前宿主已经热加载 MCP。
+- **MCP**：参考 [通用配置示例](examples/mcp-config.json)，将 `node adapters/mcp/stdio.js` 注册为 stdio 服务，使用项目入口的实际绝对路径。
+- **Skill**：让 Agent 阅读 [SKILL.md](SKILL.md)，或按宿主的 Skill 安装机制接入；发现目录和调用语法以宿主为准。
+- **CLI / JS**：按 [CLI 说明](references/commands.md) 调用现有命令，或按 [JS API](references/api.md) 导入共享函数。
+
+接入后可请求 Agent：“使用比特浏览器工具检查在线状态并列出窗口，只做只读查询，不启动、关闭或修改任何窗口。”应以当前宿主实际发现工具并成功调用为准；独立 SDK 验证成功不代表宿主已经加载 MCP。
+
+### Codex 接入示例
+
+可以将以下提示词交给 Codex：
+
+> 请拉取 https://github.com/by10457/bitbrowser-agent-kit 到本地，阅读项目的 AGENTS.md、SKILL.md 和 references/setup.md，检查所需依赖，使用现有 setup.js 完成 Codex 的 Skill 和 MCP 接入。保留已有配置，遇到同名冲突不要覆盖。完成后通过当前宿主的 MCP 检查在线状态并列出窗口，只做只读查询，不启动、关闭或修改任何窗口。如果需要新开会话或重新加载宿主，请明确说明，并区分独立 SDK 验证结果与宿主实际调用结果。
+
+当前 `setup.js` 自动配置的是 **Codex**，需要 Codex CLI；其他宿主按上面的通用接入方式配置。在项目目录运行 `node setup.js` 即可安装缺失依赖、注册 Skill/MCP 并执行只读验证。支持重复运行，保留已有配置，冲突时停止。参数及故障处理见 [安装与接入](references/setup.md)。
 
 ## 能力与边界
 

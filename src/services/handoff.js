@@ -65,6 +65,8 @@ export async function exportHandoff({ selections }, { stateDir, now = Date.now()
       loginStatus: proof ? 'title-matched' : 'unknown',
       evidence: { type: proof ? 'caller-defined-title-match' : 'unverified', title: tab.title },
       observedAt: snapshot.observedAt,
+      // 机器计算快照年龄，调用方不应凭 UTC/本地日期的字面差异猜测过期。
+      ageMs: age,
       snapshotId: snapshot.id,
     });
   }
@@ -76,6 +78,12 @@ export async function exportHandoff({ selections }, { stateDir, now = Date.now()
   const document = {
     handoffId,
     generatedAt: new Date(now).toISOString(),
+    freshness: {
+      status: 'validated',
+      checkedAt: new Date(now).toISOString(),
+      maxAgeMs: 30 * 60 * 1000,
+      oldestAgeMs: Math.max(...rows.map((row) => row.ageMs)),
+    },
     rows,
     validity:
       '历史快照，不保证当前状态；导航、登录变化、重启或外部改动后重新核验。title-matched 仅代表调用者约定的标题匹配。',

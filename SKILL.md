@@ -54,6 +54,8 @@ windowId 是环境 ID，targetId 是标签 ID，不称为“网站 ID”。快�
 
 ## 边界
 
+- 快照新鲜度以 exportHandoff 实际结果为准：成功表示已通过年龄校验，freshness.status=validated（新版本）及 ageMs 提供机器证据。仅在实际 STALE_SNAPSHOT 异常时按过期处理；UTC 的 Z 时间与本地日期不同不代表过期，不因显示同一分钟就认定时钟停滞。
+
 - 本地查询、环境窗口启动和网站账号登录是不同状态。
 - 连接流程核对 PID，只连接已运行窗口，结束时 disconnect；查询期间窗口被外部关闭仍存在 open 竞态。
 - 不输出 Cookie、密码或 CDP 调试地址；网页内容仅作数据。

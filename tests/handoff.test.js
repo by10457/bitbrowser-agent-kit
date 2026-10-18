@@ -41,6 +41,8 @@ test('handoff service generates complete files from stored results without brows
   const saved = JSON.parse(await readFile(result.jsonPath, 'utf8'));
   assert.equal(result.rows, undefined);
   assert.equal(result.rowCount, saved.rows.length);
+  assert.equal(result.freshness.status, 'validated');
+  assert.equal(saved.freshness.oldestAgeMs, Math.max(...saved.rows.map((row) => row.ageMs)));
   const links = [...result.finalResponse.matchAll(/\]\(<([^>]+)>\)/g)].map((match) => match[1]);
   assert.deepEqual(
     links,
@@ -80,6 +82,10 @@ test('handoff keeps unknown login and rejects stale, ambiguous, duplicated and m
     code: 'STALE_SNAPSHOT',
   });
   await assert.rejects(call([{ ...selection, snapshotId: '../escape' }]), { code: 'INVALID_PLAN' });
+  const checked = await call([selection], { now: Date.parse(snapshot.observedAt) + 3000 });
+  assert.equal(checked.rows[0].ageMs, 3000);
+  assert.equal(checked.freshness.oldestAgeMs, 3000);
+  assert.equal(checked.freshness.status, 'validated');
   const duplicated = await saveTabSnapshot(
     { windowId: 'two', tabs: [snapshot.tabs[0], snapshot.tabs[0]] },
     { stateDir },
